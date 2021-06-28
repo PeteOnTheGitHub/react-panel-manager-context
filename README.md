@@ -1,0 +1,1 @@
+# react-panel-manager-context
