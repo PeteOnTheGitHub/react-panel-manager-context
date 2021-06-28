@@ -70,15 +70,13 @@ const Container = styled.div<{ show: boolean; position: PanelManagerPosition }>`
   top: 0;
 
   ${(props) =>
-  props.position === PanelManagerPosition.Left &&
-  `
+  props.position === PanelManagerPosition.Left && `
     box-shadow: 3px 1px 4px rgba(0, 0, 0, ${props.show ? '0.15' : '0'});
     transform: translateX(${props.show ? '0' : '-100%'});
     left: 0;
   `}
   ${(props) =>
-  props.position === PanelManagerPosition.Right &&
-  `
+  props.position === PanelManagerPosition.Right && `
     box-shadow: -3px 1px 4px rgba(0, 0, 0, ${props.show ? '0.15' : '0'});
     transform: translateX(${props.show ? '0' : '100%'});
     right: 0;
