@@ -7,7 +7,7 @@ You can await the result of any opened panel allowing for values to be convenien
 
 1. Setup the context provider: 
 
-    You can optional configure the panels location, default is a right slide out.
+    You can optionally configure the panels location, default is a right slide out.
     ```ts
     <PanelManagerContextProvider>
       <ExampleChild />
