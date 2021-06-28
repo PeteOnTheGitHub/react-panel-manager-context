@@ -3,6 +3,8 @@
 Is a lightweight typesafe promised based react context for the management of nested panels.  As panels are opened they are replaced in-place, a history is maintained for panel traversal.
 You can await the result of any opened panel allowing for values to be conveniently resolved in a child parent relationship. The original use case for the context was an administration portal.
 
+![Example](example.gif)
+
 ## Basic Usage
 
 1. Setup the context provider: 
