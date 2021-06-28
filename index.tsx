@@ -23,7 +23,7 @@ export type RegisterPanelFunction<ResultType = void, PropType = undefined> = (
   props: ManagedPanel<ResultType, PropType>
 ) => ReactElement<ManagedPanel<ResultType, PropType>>;
 
-export interface PanelManagerContext {
+export interface PanelManagerContextType {
   register: <ResultType = void, PropType = undefined>(
     registerPanelFunction: RegisterPanelFunction<ResultType, PropType>
   ) => OpenPanelFunction<ResultType, PropType>;
@@ -40,23 +40,24 @@ export type ManagedPanel<ResultType = void, PropType = undefined> = PropType ext
     props: PropType;
   };
 
-export enum PanelManagerPosition {
-  Left,
-  Right
-}
-
-export interface PanelManagerContextProps {
-  position?: PanelManagerPosition;
-}
-
 interface PromiseExecutor<ResultType> {
   resolve: (value: ResultType) => void;
   reject: () => void;
 }
 
 interface PanelExecutor<ResultType, PropType> {
+  key: Key;
   panel: ReactElement<ManagedPanel<ResultType, PropType>>;
   executor: PromiseExecutor<ResultType>;
+}
+
+enum PanelManagerPosition {
+  Left,
+  Right
+}
+
+interface PanelManagerContextProps {
+  position?: PanelManagerPosition;
 }
 
 const Container = styled.div<{ show: boolean; position: PanelManagerPosition }>`
@@ -65,14 +66,14 @@ const Container = styled.div<{ show: boolean; position: PanelManagerPosition }>`
   z-index: 99;
   transition: all 0.2s ease-in-out;
   opacity: ${(props) => (props.show ? '1' : '0.25')};
+  height: 100%;
+  top: 0;
 
   ${(props) =>
   props.position === PanelManagerPosition.Left &&
   `
     box-shadow: 3px 1px 4px rgba(0, 0, 0, ${props.show ? '0.15' : '0'});
     transform: translateX(${props.show ? '0' : '-100%'});
-    height: 100%;
-    top: 0;
     left: 0;
   `}
   ${(props) =>
@@ -80,15 +81,13 @@ const Container = styled.div<{ show: boolean; position: PanelManagerPosition }>`
   `
     box-shadow: -3px 1px 4px rgba(0, 0, 0, ${props.show ? '0.15' : '0'});
     transform: translateX(${props.show ? '0' : '100%'});
-    height: 100%;
-    top: 0;
     right: 0;
   `}
 `;
 
-const PanelManagerContext = createContext<PanelManagerContext | undefined>(undefined);
+const PanelManagerContext = createContext<PanelManagerContextType | undefined>(undefined);
 
-export const usePanelManagerContext = (): PanelManagerContext => {
+export const usePanelManagerContext = (): PanelManagerContextType => {
   const panelManagerContext = useContext(PanelManagerContext);
   if (!panelManagerContext) {
     throw new Error('usePanelManagerContext must be used within the PanelMangerProvider.');
@@ -97,13 +96,11 @@ export const usePanelManagerContext = (): PanelManagerContext => {
 };
 
 export const PanelManagerContextProvider: FunctionComponent<PanelManagerContextProps> = ({
- position = PanelManagerPosition.Right,
- children
+  position = PanelManagerPosition.Right,
+  children
 }) => {
   const panelRegistry = useMemo<Record<Key, OpenPanelFunction<unknown>>>(() => ({}), []);
-  const [panelExecutorStack, setPanelExecutorStack] = useState<PanelExecutor<unknown, unknown>[]>(
-    []
-  );
+  const [panelExecutorStack, setPanelExecutorStack] = useState<PanelExecutor<unknown, unknown>[]>([]);
   const [closingPanel, setClosingPanel] = useState<ReactElement<ManagedPanel> | null>();
   const [panels, setPanels] = useState<ReactElement<ManagedPanel>[]>([]);
 
@@ -145,9 +142,9 @@ export const PanelManagerContextProvider: FunctionComponent<PanelManagerContextP
         props
       } as never) as ReactElement<ManagedPanel<unknown, unknown>>;
       setPanelExecutorStack((stack) => {
-        const panelExecutor = { executor, panel };
+        const panelExecutor = { executor, key, panel };
         if (!stack.length) setClosingPanel(panel);
-        return [...stack, panelExecutor];
+        return [...stack].pop()?.key !== key ? [...stack, panelExecutor] : [...stack];
       });
       return result as Promise<ResultType>;
     },
