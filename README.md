@@ -36,7 +36,7 @@ You can await the result of any opened panel allowing for values to be convenien
     ```
 3. Register and open the panel:
 
-    You can register as many panels as need, how each panel requires a unique key, register() returns the function to open that panel.
+    You can register as many panels as need, each panel requires a unique key, register() returns the function to open that panel.
     ```ts
     const ExamplePage: FunctionComponent = () => {
       const { register } = usePanelManagerContext();
