@@ -111,7 +111,7 @@ const CustomPanel: FunctionComponent<ManagedPanel<void, string>> = ({ close, dis
 const ExamplePage: FunctionComponent = () => {
 const customProps = "Hello world";
 const { register } = usePanelManagerContext();
-const open = register<string>(({ dismiss, close, props }) => 
+const open = register<void, string>(({ dismiss, close, props }) => 
   <CustomPanel key="panel" close={close} dismiss={dismiss} props={props} />
 )
 return (<Button onClick={() => open(customProps)}>Open Panel</Button>);
