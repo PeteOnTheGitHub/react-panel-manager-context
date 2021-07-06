@@ -102,7 +102,7 @@ const CustomPanel: FunctionComponent<ManagedPanel<void, string>> = ({ close, dis
       title="Panel"
       onDismiss={() => dismiss()}
     >
-      Content
+      {props}
     </Panel>
   );
 }
